@@ -1,48 +1,44 @@
 #pragma once
 
-#include <JuceHeader.h>
+#include "PluginProcessor.h"
 
-class BloodScrapeAudioProcessor : public juce::AudioProcessor
+class BloodLookAndFeel : public juce::LookAndFeel_V4
 {
 public:
-    BloodScrapeAudioProcessor();
-    ~BloodScrapeAudioProcessor() override = default;
+    void drawRotarySlider(
+        juce::Graphics& g,
+        int x,
+        int y,
+        int width,
+        int height,
+        float sliderPos,
+        float rotaryStartAngle,
+        float rotaryEndAngle,
+        juce::Slider& slider) override;
+};
 
-    void prepareToPlay (double sampleRate, int samplesPerBlock) override;
-    void releaseResources() override;
+class BloodScrapeAudioProcessorEditor : public juce::AudioProcessorEditor
+{
+public:
+    explicit BloodScrapeAudioProcessorEditor(BloodScrapeAudioProcessor&);
+    ~BloodScrapeAudioProcessorEditor() override;
 
-    bool isBusesLayoutSupported (const BusesLayout& layouts) const override;
-
-    void processBlock (
-        juce::AudioBuffer<float>& buffer,
-        juce::MidiBuffer& midiMessages) override;
-
-    juce::AudioProcessorEditor* createEditor() override;
-    bool hasEditor() const override { return true; }
-
-    const juce::String getName() const override { return "BloodScrape"; }
-
-    bool acceptsMidi() const override { return false; }
-    bool producesMidi() const override { return false; }
-    bool isMidiEffect() const override { return false; }
-
-    double getTailLengthSeconds() const override { return 0.0; }
-
-    int getNumPrograms() override { return 1; }
-    int getCurrentProgram() override { return 0; }
-    void setCurrentProgram (int) override {}
-    const juce::String getProgramName (int) override { return {}; }
-    void changeProgramName (int, const juce::String&) override {}
-
-    void getStateInformation (juce::MemoryBlock& destData) override;
-    void setStateInformation (const void* data, int sizeInBytes) override;
-
-    juce::AudioProcessorValueTreeState apvts;
+    void paint(juce::Graphics&) override;
+    void resized() override;
 
 private:
-    std::vector<float> previousSamples;
+    BloodScrapeAudioProcessor& processor;
 
-    static juce::AudioProcessorValueTreeState::ParameterLayout createParameters();
+    BloodLookAndFeel bloodLookAndFeel;
 
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (BloodScrapeAudioProcessor)
+    juce::Slider hardnessKnob;
+    juce::Label hardnessLabel;
+    juce::Label titleLabel;
+    juce::Label subtitleLabel;
+
+    std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment>
+        hardnessAttachment;
+
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(
+        BloodScrapeAudioProcessorEditor)
 };
