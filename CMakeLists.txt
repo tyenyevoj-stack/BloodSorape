@@ -37,6 +37,8 @@ target_sources(BloodScrape
         Source/PluginEditor.cpp
 )
 
+juce_generate_juce_header(BloodScrape)
+
 target_compile_definitions(BloodScrape
     PRIVATE
         JUCE_WEB_BROWSER=0
